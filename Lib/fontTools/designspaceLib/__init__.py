@@ -265,6 +265,7 @@ class AxisDescriptor(SimpleDescriptor):
         self.default = None
         self.hidden = False
         self.map = []
+        self.axisValueNames = {}
 
     def serialize(self):
         # output to a dict, used in testing
@@ -276,6 +277,7 @@ class AxisDescriptor(SimpleDescriptor):
                 default = self.default,
                 hidden = self.hidden,
                 map = self.map,
+                axisValueNames = self.axisValueNames,
             )
         return d
 
@@ -422,6 +424,15 @@ class BaseDocWriter(object):
                 mapElement.attrib['input'] = self.intOrFloat(inputValue)
                 mapElement.attrib['output'] = self.intOrFloat(outputValue)
                 axisElement.append(mapElement)
+        if axisObject.axisValueNames:
+            axisValueNamesElement = ET.Element('valuenames')
+            for value, valueName in axisObject.axisValueNames.items():
+                axisvaluename = ET.Element('valuename')
+                axisvaluename.attrib['value'] = self.intOrFloat(value)
+                axisvaluename.attrib['valuename'] = valueName
+                axisValueNamesElement.append(axisvaluename)
+            axisElement.append(axisValueNamesElement)
+
         self.root.findall('.axes')[0].append(axisElement)
 
     def _addInstance(self, instanceObject):
